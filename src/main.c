@@ -2,6 +2,7 @@
 #include <coelum/scene.h>
 #include <coelum/theatre.h>
 #include <coelum/scene.h>
+#include <coelum/utils.h>
 #include "include/actor_wall.h"
 #include "include/actor_player.h"
 
@@ -14,6 +15,8 @@ extern theatre_T* THEATRE;
 
 scene_T* init_scene_main()
 {
+    init_random();
+
     // creating a scene                          tick        draw     (2 dimensions)
     scene_T* s = scene_constructor(init_scene(), (void*) 0, (void*) 0, 2);
     s->bg_r = 154;
@@ -22,14 +25,23 @@ scene_T* init_scene_main()
     
     dynamic_list_append(((state_T*)s)->actors, init_actor_player(200, 120));
 
-    for (int i = 0; i < 10; i++)
-        dynamic_list_append(((state_T*)s)->actors, init_actor_wall(120 + (i * 16), 300));
+    int nr_planets = 5;
 
-    for (int i = 0; i < 6; i++)
-        dynamic_list_append(((state_T*)s)->actors, init_actor_wall(256 + (i * 16), 348));
+    for (int i = 0; i < nr_planets; i++)
+    {
+        int r = random_int(3, 9)*16;
+        int xx = random_int(0, 640);
+        int yy = random_int(0, 480);
 
-    for (int i = 0; i < 10; i++)
-        dynamic_list_append(((state_T*)s)->actors, init_actor_wall(300 + (i * 16), 400));
+        for (int x = xx-(r/2); x < xx+(r/2); x+=16)
+        {
+            for (int y = yy-(r/2); y < yy+(r/2); y+=16)
+            {
+                if (vec2_distance(x+(16/2), y+(16/2), xx, yy) < r / 2)
+                    dynamic_list_append(((state_T*)s)->actors, init_actor_wall(x, y));
+            }
+        }
+    }
 
     return s;
 } 

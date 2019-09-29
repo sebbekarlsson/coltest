@@ -1,4 +1,5 @@
 #include "include/actor_player.h"
+#include "include/actor_wall.h"
 #include <coelum/draw_utils.h>
 #include <coelum/current.h>
 #include <coelum/input.h>
@@ -72,15 +73,18 @@ static void move(actor_T* self, float xa, float ya)
         return;
     }
 
-    actor_T* actor = (void*)0;
+    actor_T* actor = get_wall_at_pos(self->x + xa, self->y + ya, self->width, self->height);
 
-    if ((actor = get_wall_at_pos(self->x + xa, self->y + ya, self->width, self->height)) == (void*)0)
+    if (actor == (void*)0)
     {
         self->x += xa;
         self->y += ya;
     }
     else
     {
+        actor_wall_T* wall = (actor_wall_T*) actor;
+        wall->r = 0;
+
         self->dx = 0;
         self->dy = 0;
     }

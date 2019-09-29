@@ -6,6 +6,9 @@
 typedef struct ACTOR_WALL_STRUCT
 {
     actor_T base;
+    float r;
+    float g;
+    float b;
 } actor_wall_T;
 
 

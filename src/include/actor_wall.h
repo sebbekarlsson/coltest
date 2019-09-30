@@ -9,10 +9,16 @@ typedef struct ACTOR_WALL_STRUCT
     float r;
     float g;
     float b;
+
+    enum
+    {
+        WALL_STONE,
+        WALL_GRASS
+    } type;
 } actor_wall_T;
 
 
-actor_wall_T* init_actor_wall(float x, float y);
+actor_wall_T* init_actor_wall(float x, float y, int type);
 
 void actor_wall_draw(actor_T* self);
 

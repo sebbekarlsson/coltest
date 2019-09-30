@@ -3,6 +3,7 @@
 #include <coelum/theatre.h>
 #include <coelum/scene.h>
 #include <coelum/utils.h>
+#include "include/sprites.h"
 #include "include/actor_wall.h"
 #include "include/actor_player.h"
 
@@ -25,11 +26,11 @@ scene_T* init_scene_main()
     
     dynamic_list_append(((state_T*)s)->actors, init_actor_player(200, 120));
 
-    int nr_planets = 5;
+    int nr_planets = 6;
 
     for (int i = 0; i < nr_planets; i++)
     {
-        int r = random_int(3, 9)*16;
+        int r = random_int(4, 9)*16;
         int xx = random_int(0, 640);
         int yy = random_int(0, 480);
 
@@ -37,8 +38,19 @@ scene_T* init_scene_main()
         {
             for (int y = yy-(r/2); y < yy+(r/2); y+=16)
             {
-                if (vec2_distance(x+(16/2), y+(16/2), xx, yy) < r / 2)
-                    dynamic_list_append(((state_T*)s)->actors, init_actor_wall(x, y));
+                float distance = vec2_distance(x+(16/2), y+(16/2), xx, yy);
+
+                if (distance < r / 2)
+                {
+                    dynamic_list_append(
+                        ((state_T*)s)->actors,
+                        init_actor_wall(
+                            x,
+                            y,
+                            distance > (16*3) ? WALL_GRASS : WALL_STONE
+                        )
+                    );
+                }
             }
         }
     }
@@ -49,6 +61,7 @@ scene_T* init_scene_main()
 int main(int argc, char* argv[])
 {
     coelum_init();
+    init_sprites();
 
     scene_manager_register_scene(THEATRE->scene_manager, (scene_T*) init_scene_main());
 

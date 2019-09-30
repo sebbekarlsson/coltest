@@ -6,6 +6,7 @@
 typedef struct ACTOR_PLAYER_STRUCT
 {
     actor_T base;
+    unsigned int has_emitted_particles;
 } actor_player_T;
 
 

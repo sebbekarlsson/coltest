@@ -1,9 +1,14 @@
 #include "include/actor_wall.h"
+#include "include/sprites.h"
 #include <coelum/draw_utils.h>
 #include <coelum/current.h>
 
 
-actor_wall_T* init_actor_wall(float x, float y)
+extern const sprite_T* SPRITE_STONE;
+extern const sprite_T* SPRITE_GRASS;
+
+
+actor_wall_T* init_actor_wall(float x, float y, int type)
 {
     actor_wall_T* wall = calloc(1, sizeof(struct ACTOR_WALL_STRUCT));
     actor_T* actor = (actor_T*) wall;
@@ -15,29 +20,19 @@ actor_wall_T* init_actor_wall(float x, float y)
     wall->r = 255;
     wall->g = 0;
     wall->b = 0;
+    wall->type = type;
+
+    switch (type)
+    {
+        case WALL_STONE: actor->sprite = SPRITE_STONE; break;
+        case WALL_GRASS: actor->sprite = SPRITE_GRASS; break;
+    }
 
     return wall;
 }
 
 void actor_wall_draw(actor_T* self)
 {
-    state_T* state = get_current_state();
-    actor_wall_T* wall = (actor_wall_T*) self;
-
-    draw_positioned_2D_mesh(
-        self->x,
-        self->y,
-        self->z,
-        self->width,
-        self->height,
-        wall->r,
-        wall->g,
-        wall->b,
-        1.0f,
-        state
-    );
-
-    wall->r = 255;
 }
 
 void actor_wall_tick(actor_T* self)

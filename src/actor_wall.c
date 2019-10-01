@@ -22,11 +22,7 @@ actor_wall_T* init_actor_wall(float x, float y, int type)
     wall->b = 0;
     wall->type = type;
 
-    switch (type)
-    {
-        case WALL_STONE: actor->sprite = SPRITE_STONE; break;
-        case WALL_GRASS: actor->sprite = SPRITE_GRASS; break;
-    }
+    actor_wall_update(wall);
 
     return wall;
 }
@@ -37,4 +33,16 @@ void actor_wall_draw(actor_T* self)
 
 void actor_wall_tick(actor_T* self)
 {
+}
+
+void actor_wall_update(actor_wall_T* self)
+{
+    actor_T* actor = (actor_T*) self;
+
+    switch (self->type)
+    {
+        case WALL_STONE: actor->sprite = SPRITE_STONE; break;
+        case WALL_GRASS: actor->sprite = SPRITE_GRASS; break;
+        case WALL_AIR: actor->sprite = (void*) 0; break;
+    }
 }

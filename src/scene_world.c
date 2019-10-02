@@ -1,4 +1,5 @@
 #include "include/scene_world.h"
+#include "include/actor_player.h"
 #include <coelum/utils.h>
 
 
@@ -16,6 +17,9 @@ scene_world_T* init_scene_world()
             world->chunks[x][y] = init_chunk();
         }
     }
+    
+    dynamic_list_append(((state_T*)scene)->actors, (actor_T*)init_actor_player(
+                640/2, (480/2)-((16*18)/2)));
 
     scene_world_generate(world);
 
@@ -57,13 +61,7 @@ static void generate_planet(scene_world_T* world, int r, int x, int y)
     {
         for (int j = y - (r / 2); j < y + (r / 2); j++)
         {
-            int chunk_y = 0;
-            int chunk_x = 0;
-
-            chunk_x = (i * 16) / (16 * 8);
-            chunk_y = (j * 16) / (16 * 8);
-
-            chunk_T* chunk = world->chunks[chunk_x][chunk_y];
+            chunk_T* chunk = scene_world_get_chunk_at(world, i * 16, j * 16);
 
             float distance = vec2_distance(i, j, x, y);
 
@@ -79,6 +77,11 @@ static void generate_planet(scene_world_T* world, int r, int x, int y)
             }
         }
     }
+}
+
+chunk_T* scene_world_get_chunk_at(scene_world_T* world, int x, int y)
+{
+    return world->chunks[x / (16 * 8)][y / (16 * 8)];
 }
 
 void scene_world_generate(scene_world_T* self)

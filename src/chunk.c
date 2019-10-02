@@ -1,5 +1,6 @@
 #include "include/chunk.h"
 #include <coelum/current.h>
+#include <coelum/draw_utils.h>
 
 
 chunk_T* init_chunk()
@@ -43,4 +44,30 @@ void chunk_draw(chunk_T* self, int x, int y)
             actor_draw_default(actor, state);
         }
     }
+
+    draw_line(
+        x,
+        y,
+        0.0f,
+        x,
+        16*8,
+        0,
+        255,
+        0,
+        0,
+        state
+    );
+
+    draw_line(
+        x,
+        y,
+        0.0f,
+        16*8,
+        y,
+        0,
+        255,
+        0,
+        0,
+        state
+    );
 }

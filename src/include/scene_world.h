@@ -17,5 +17,7 @@ void scene_world_tick(scene_T* self);
 
 void scene_world_draw(scene_T* self);
 
+chunk_T* scene_world_get_chunk_at(scene_world_T* world, int x, int y);
+
 void scene_world_generate(scene_world_T* self);
 #endif

@@ -69,7 +69,14 @@ void actor_particle_tick(actor_T* self)
         dynamic_list_remove(state->actors, self, (void*)0);
     }
 
-    actor_T* ground_below = get_wall_at_pos(self->x, self->y + self->dy + 0.6f, self->width, self->height, self->height, 0); 
+    actor_T* ground_below = get_wall_at_pos(
+        self->x,
+        self->y + self->dy + 0.6f,
+        self->width,
+        self->height,
+        self->height,
+        0
+    ); 
 
     if (!ground_below)
     {

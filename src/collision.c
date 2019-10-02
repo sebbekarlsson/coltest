@@ -13,7 +13,6 @@ actor_T* get_wall_at_pos(float x, float y, float w, float h, int x_offset, int y
     
     chunk_T* chunk = scene_world_get_chunk_at(world, xx, yy);
 
-
     for (int i = 0; i < 8; i++)
     {
         for (int j = 0; j < 8; j++)
@@ -46,7 +45,13 @@ void move(actor_T* self, float xa, float ya)
         return;
     }
 
-    actor_T* actor = get_wall_at_pos(self->x + xa, self->y + ya, self->width, self->height, xa > 0 ? self->width : 0, self->height);
+    actor_T* actor = get_wall_at_pos(
+        self->x + xa,
+        self->y + ya,
+        self->width,
+        self->height, xa > 0 ? self->width : 0,
+        self->height
+    );
 
     if (actor == (void*)0)
     {

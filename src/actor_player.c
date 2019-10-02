@@ -76,7 +76,14 @@ void actor_player_tick(actor_T* self)
         physics_vec2_push(&self->dx, &self->dy, 270, acceleration);
     }
     
-    actor_T* ground_below = get_wall_at_pos(self->x, self->y + self->dy + 0.6f, self->width, self->height, 0, self->height); 
+    actor_T* ground_below = get_wall_at_pos(
+        self->x,
+        self->y + self->dy + 0.6f,
+        self->width,
+        self->height,
+        0,
+        self->height
+    ); 
 
     if (!ground_below)
     {

@@ -1,6 +1,7 @@
 #include "include/actor_particle.h"
 #include "include/actor_wall.h"
 #include "include/sprites.h"
+#include "include/collision.h"
 #include <coelum/draw_utils.h>
 #include <coelum/current.h>
 #include <coelum/physics.h>
@@ -50,55 +51,6 @@ void actor_particle_draw(actor_T* self)
     );
 }
 
-static actor_T* get_wall_at_pos(float x, float y, float w, float h)
-{
-    state_T* state = get_current_state();
-
-    for (int i = 0; i < state->actors->size; i++)
-    {
-        actor_T* actor = (actor_T*) state->actors->items[i];
-
-        if (strcmp(actor->type_name, "wall") != 0)
-            continue;
-
-        if (x + w > actor->x && x < actor->x + actor->width)
-        {
-            if (y + w > actor->y && y < actor->y + actor->height)
-            {
-                return actor;
-            }
-        }
-    }
-
-    return (void*) 0;
-}
-
-static void move(actor_T* self, float xa, float ya)
-{
-    if (xa != 0 && ya != 0)
-    {
-        move(self, xa, 0);
-        move(self, 0, ya);
-        return;
-    }
-
-    actor_T* actor = get_wall_at_pos(self->x + xa, self->y + ya, self->width, self->height);
-
-    if (actor == (void*)0)
-    {
-        self->x += xa;
-        self->y += ya;
-    }
-    else
-    {
-        actor_wall_T* wall = (actor_wall_T*) actor;
-        wall->r = 0;
-
-        self->dx = 0;
-        self->dy = 0;
-    }
-}
-
 void actor_particle_tick(actor_T* self)
 {
     move(self, self->dx, self->dy);
@@ -117,7 +69,7 @@ void actor_particle_tick(actor_T* self)
         dynamic_list_remove(state->actors, self, (void*)0);
     }
 
-    actor_T* ground_below = get_wall_at_pos(self->x, self->y + self->dy + 0.6f, self->width, self->height); 
+    actor_T* ground_below = get_wall_at_pos(self->x, self->y + self->dy + 0.6f, self->width, self->height, self->height, 0); 
 
     if (!ground_below)
     {

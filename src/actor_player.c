@@ -59,16 +59,57 @@ void actor_player_tick(actor_T* self)
     physics_to_zero(&self->dx, self->friction);
     physics_to_zero(&self->dy, self->friction); 
 
-    float acceleration = 0.6f;
+    float acceleration = 0.9f;
+    float grav_angle = -vec2_angle(
+            self->x + self->width/2, self->y + self->height/2, 640/2 + 16/2, 480/2 + 16/2);
 
-    if (KEYBOARD_STATE->keys[GLFW_KEY_LEFT])
-    {
-        physics_vec2_push(&self->dx, &self->dy, 180, acceleration);
-    }
+    float g_x = self->x + (cos(glm_rad(grav_angle)) * (16*17));
+    float g_y = self->y - (sin(glm_rad(grav_angle)) * (16*17));
 
-    if (KEYBOARD_STATE->keys[GLFW_KEY_RIGHT])
+    draw_line(
+        self->x + self->width / 2,
+        self->y + self->height / 2,
+        0.0f,
+        g_x,
+        g_y,
+        0,
+        0,
+        0,
+        255,
+        state
+    );
+        
+    //self->rz = (grav_angle);
+
+    if (KEYBOARD_STATE->keys[GLFW_KEY_RIGHT] || KEYBOARD_STATE->keys[GLFW_KEY_LEFT])
     {
-        physics_vec2_push(&self->dx, &self->dy, 0, acceleration);
+        float move_angle = 0.0f;
+        float fix = 3.0f;
+
+        if (KEYBOARD_STATE->keys[GLFW_KEY_RIGHT])
+        {
+            move_angle = grav_angle + 90.0f + fix;
+        }
+        else
+        {
+            move_angle = grav_angle - 90.0f - fix;
+        }
+
+        draw_line(
+            self->x,
+            self->y,
+            0.0f,
+            self->x + (cos(glm_rad(move_angle)) * 16*4),
+            self->y - (sin(glm_rad(move_angle)) * 16*4),
+            0,
+            255,
+            0,
+            0,
+            state
+        );
+
+        self->dx += (cos(glm_rad(move_angle)) * acceleration);
+        self->dy -= (sin(glm_rad(move_angle)) * acceleration);
     } 
 
     if (KEYBOARD_STATE->keys[GLFW_KEY_DOWN])
@@ -77,8 +118,8 @@ void actor_player_tick(actor_T* self)
     }
     
     actor_T* ground_below = get_wall_at_pos(
-        self->x,
-        self->y + self->dy + 0.6f,
+        self->x + (cos(glm_rad(grav_angle)) * 1.6f),
+        self->y - (sin(glm_rad(grav_angle)) * 1.6f),
         self->width,
         self->height,
         0,
@@ -87,18 +128,26 @@ void actor_player_tick(actor_T* self)
 
     if (!ground_below)
     {
-        self->dy += 0.6f;
+        //self->dy += 0.6f;
+        physics_vec2_push(&self->dx, &self->dy, grav_angle, 0.6f);
         player->has_emitted_particles = 0;
     }
     else
     {
+        actor_wall_T* wall = (actor_wall_T*) ground_below;
+        wall->type = WALL_STONE;
+        actor_wall_update(wall);
+
         if (KEYBOARD_STATE->keys[GLFW_KEY_UP])
         {
-            physics_vec2_push(&self->dx, &self->dy, 90, acceleration * 20);
+            self->dx -= (cos(glm_rad(grav_angle)) * acceleration * 10);
+            self->dy += (sin(glm_rad(grav_angle)) * acceleration * 10);
+            //physics_vec2_push(&self->dx, &self->dy, -grav_angle, acceleration * 20);
         }
         else
         {
-            self->dy = 0;
+            //self->dy = 0;
+            //self->dx = 0;
         }
 
         if (!player->has_emitted_particles)

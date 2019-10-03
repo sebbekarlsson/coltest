@@ -34,6 +34,8 @@ void chunk_draw(chunk_T* self, int x, int y)
 {
     state_T* state = get_current_state();
 
+    camera_bind(state->camera);
+
     for (int xx = 0; xx < 8; xx++)
     {
         for (int yy = 0; yy < 8; yy++)
@@ -70,4 +72,6 @@ void chunk_draw(chunk_T* self, int x, int y)
         0,
         state
     );
+
+    camera_unbind(state->camera);
 }

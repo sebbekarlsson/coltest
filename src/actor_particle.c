@@ -63,36 +63,12 @@ void actor_particle_tick(actor_T* self)
     state_T* state = get_current_state();
     actor_particle_T* particle = (actor_particle_T*) self;
 
-    float acceleration = 0.9f;
-    float grav_angle = -vec2_angle(
-            self->x + self->width/2, self->y + self->height/2, 640/2 + 16/2, 480/2 + 16/2);
-
     if (particle->timer < 20)
     {
         particle->timer += 1;
     }
     else
     {
-        self->dx = 0;
-        self->dy = 0;
-        //dynamic_list_remove(state->actors, self, (void*)0);
-    }
-
-    actor_T* ground_below = get_wall_at_pos(
-        self->x + (cos(glm_rad(grav_angle)) * 1.6f),
-        self->y - (sin(glm_rad(grav_angle)) * 1.6f),
-        self->width,
-        self->height,
-        0,
-        self->height
-    ); 
-
-    if (!ground_below)
-    {
-        physics_vec2_push(&self->dx, &self->dy, grav_angle, 0.6f);
-    }
-    else
-    {
-        //self->dy = 0.0f;
+        dynamic_list_remove(state->actors, self, (void*)0);
     }
 }

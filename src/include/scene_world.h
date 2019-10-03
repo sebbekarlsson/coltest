@@ -2,13 +2,14 @@
 #define SCENE_WORLD_H
 #include <coelum/scene.h>
 #include "chunk.h"
+#define NR_CHUNKS 24
 
 
 typedef struct SCENE_WORLD_STRUCT
 {
     scene_T base;
 
-    chunk_T* chunks[16][16];    
+    chunk_T* chunks[NR_CHUNKS][NR_CHUNKS];
 } scene_world_T;
 
 scene_world_T* init_scene_world();

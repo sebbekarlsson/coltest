@@ -1,6 +1,8 @@
 #include "include/scene_world.h"
 #include "include/actor_player.h"
+#include "include/actor_planet.h"
 #include <coelum/utils.h>
+#include <string.h>
 
 
 scene_world_T* init_scene_world()
@@ -10,9 +12,9 @@ scene_world_T* init_scene_world()
 
     scene_constructor(scene, scene_world_tick, scene_world_draw, 2);
 
-    for (int x = 0; x < 16; x++)
+    for (int x = 0; x < NR_CHUNKS; x++)
     {
-        for (int y = 0; y < 16; y++)
+        for (int y = 0; y < NR_CHUNKS; y++)
         {
             world->chunks[x][y] = init_chunk();
         }
@@ -29,52 +31,56 @@ scene_world_T* init_scene_world()
 void scene_world_tick(scene_T* self)
 {
     scene_world_T* world = (scene_world_T*) self;
+    state_T* state = (state_T*) self;
 
-    for (int x = 0; x < 16; x++)
+    for (int x = 0; x < NR_CHUNKS; x++)
     {
-        for (int y = 0; y < 16; y++)
+        for (int y = 0; y < NR_CHUNKS; y++)
         {
             chunk_tick(world->chunks[x][y]);
         }
     }
+
+    float cam_x = 0;
+    float cam_y = 0;
+
+    for (int i = 0; i < state->actors->size; i++)
+    {
+        actor_T* actor = (actor_T*) state->actors->items[i];
+
+        if (strcmp(actor->type_name, "player") == 0)
+        {
+            cam_x = actor->x;
+            cam_y = actor->y;
+            break;
+        }
+    }
+
+    state->camera->x = cam_x - (640 /2);
+    state->camera->y = cam_y - (480 / 2);
 }
 
 void scene_world_draw(scene_T* self)
 {
     scene_world_T* world = (scene_world_T*) self;
+    state_T* state = (state_T*) self;
+    camera_T* camera = state->camera;
 
-    for (int x = 0; x < 16; x++)
+    for (int x = 0; x < NR_CHUNKS; x++)
     {
-        for (int y = 0; y < 16; y++)
+        for (int y = 0; y < NR_CHUNKS; y++)
         {
-            chunk_draw(world->chunks[x][y], x*(16*8), y*(16*8));
-        }
-    }
-}
+            int size = (16*8);
+            int chx = x*size;
+            int chy = y*size;
 
-static void generate_planet(scene_world_T* world, int r, int x, int y)
-{
-    x = x / 16;
-    y = y / 16;
+            if (chx+size < camera->x || (chx-size) > (camera->x + 640))
+                continue;
 
-    for (int i = x - (r / 2); i < x + (r / 2); i++)
-    {
-        for (int j = y - (r / 2); j < y + (r / 2); j++)
-        {
-            chunk_T* chunk = scene_world_get_chunk_at(world, i * 16, j * 16);
-
-            float distance = vec2_distance(i, j, x, y);
-
-            int wall_x = (i) % 8;
-            int wall_y = (j) % 8;
-
-            actor_wall_T* wall = chunk->walls[wall_x][wall_y];
-
-            if (distance < r / 2)
-            {
-                wall->type = distance > (((r / 2)-random_int(1, 3))) ? WALL_GRASS : WALL_STONE;
-                actor_wall_update(wall);
-            }
+            if (chy+size < camera->y || (chy-size) > (camera->y + 480))
+                continue;
+             
+            chunk_draw(world->chunks[x][y], chx, chy);
         }
     }
 }
@@ -86,5 +92,15 @@ chunk_T* scene_world_get_chunk_at(scene_world_T* world, int x, int y)
 
 void scene_world_generate(scene_world_T* self)
 {
-    generate_planet(self, 17, (640 / 2), (480 / 2));
+    state_T* state = (state_T*) self;
+
+    actor_planet_T* planet = init_actor_planet(640/2, 480/2, self, 17, 17+8);
+    actor_planet_generate(planet);
+
+    dynamic_list_append(state->actors, (actor_T*) planet);
+
+    actor_planet_T* planet2 = init_actor_planet((640/2) + (30*16), (480/2), self, 17, 17+8);
+    actor_planet_generate(planet2);
+
+    dynamic_list_append(state->actors, (actor_T*) planet2);
 }

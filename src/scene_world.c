@@ -96,11 +96,13 @@ void scene_world_generate(scene_world_T* self)
 
     actor_planet_T* planet = init_actor_planet(640/2, 480/2, self, 17, 17+8);
     actor_planet_generate(planet);
-
     dynamic_list_append(state->actors, (actor_T*) planet);
 
     actor_planet_T* planet2 = init_actor_planet((640/2) + (30*16), (480/2), self, 17, 17+8);
     actor_planet_generate(planet2);
-
     dynamic_list_append(state->actors, (actor_T*) planet2);
+
+    actor_planet_T* planet3 = init_actor_planet((640/2) + (30*16), (480/2) + (30*16), self, 17, 17+8);
+    actor_planet_generate(planet3);
+    dynamic_list_append(state->actors, (actor_T*) planet3);
 }

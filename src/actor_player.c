@@ -34,6 +34,22 @@ actor_player_T* init_actor_player(float x, float y)
 
 void actor_player_draw(actor_T* self)
 {
+    state_T* state = get_current_state();
+    float g_x = self->x + (cos(glm_rad(-(self->rz+90.0f) + 360)) * (16*(17/2))) + 16/2;
+    float g_y = self->y - (sin(glm_rad(-(self->rz+90.0f) + 360)) * (16*(17/2))) + 16/2;
+
+    draw_line(
+        self->x,
+        self->y,
+        self->z,
+        g_x,
+        g_y,
+        self->z,
+        0,
+        0,
+        255,
+        state        
+    );
 }
 
 void actor_player_tick(actor_T* self)
@@ -46,11 +62,12 @@ void actor_player_tick(actor_T* self)
     physics_to_zero(&self->dy, self->friction); 
 
     float acceleration = 0.9f;
-    float gravity_angle = -vec2_angle(
-            self->x + self->width/2, self->y + self->height/2, 640/2 + 16/2, 480/2 + 16/2);
+    
+    float g_x = self->x + (cos(glm_rad(-(self->rz+90.0f) + 360)) * (16*(17/2))) + 16/2;
+    float g_y = self->y - (sin(glm_rad(-(self->rz+90.0f) + 360)) * (16*(17/2))) + 16/2;
 
-    float g_x = self->x + (cos(glm_rad(gravity_angle)) * (16*(17/2))) + 16/2;
-    float g_y = self->y - (sin(glm_rad(gravity_angle)) * (16*(17/2))) + 16/2;
+    float gravity_angle = -vec2_angle(
+            self->x + self->width/2, self->y + self->height/2, g_x, g_y);
 
     if (KEYBOARD_STATE->keys[GLFW_KEY_RIGHT] || KEYBOARD_STATE->keys[GLFW_KEY_LEFT])
     {

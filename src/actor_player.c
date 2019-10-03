@@ -63,8 +63,8 @@ void actor_player_tick(actor_T* self)
     float grav_angle = -vec2_angle(
             self->x + self->width/2, self->y + self->height/2, 640/2 + 16/2, 480/2 + 16/2);
 
-    float g_x = self->x + (cos(glm_rad(grav_angle)) * (16*17));
-    float g_y = self->y - (sin(glm_rad(grav_angle)) * (16*17));
+    float g_x = self->x + (cos(glm_rad(grav_angle)) * (16*(17/2))) + 16/2;
+    float g_y = self->y - (sin(glm_rad(grav_angle)) * (16*(17/2))) + 16/2;
 
     draw_line(
         self->x + self->width / 2,
@@ -79,8 +79,6 @@ void actor_player_tick(actor_T* self)
         state
     );
         
-    //self->rz = (grav_angle);
-
     if (KEYBOARD_STATE->keys[GLFW_KEY_RIGHT] || KEYBOARD_STATE->keys[GLFW_KEY_LEFT])
     {
         float move_angle = 0.0f;
@@ -94,6 +92,9 @@ void actor_player_tick(actor_T* self)
         {
             move_angle = grav_angle - 90.0f - fix;
         }
+
+        self->rz = grav_angle + 90.0f;
+        printf("%12.6f\n", grav_angle);
 
         draw_line(
             self->x,

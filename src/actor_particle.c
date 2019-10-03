@@ -12,6 +12,8 @@
 extern const sprite_T* SPRITE_STONE;
 extern const sprite_T* SPRITE_GRASS;
 
+extern unsigned int SHADER_COLORED;
+
 
 actor_particle_T* init_actor_particle(float x, float y)
 {
@@ -27,6 +29,7 @@ actor_particle_T* init_actor_particle(float x, float y)
     particle->g = 0;
     particle->b = 0;
     particle->timer = 0;
+    actor->shader_program = SHADER_COLORED;
 
     return particle;
 }
@@ -56,7 +59,7 @@ void actor_particle_tick(actor_T* self)
     move(self, self->dx, self->dy);
     physics_to_zero(&self->dx, self->friction);
     physics_to_zero(&self->dy, self->friction); 
-    
+
     state_T* state = get_current_state();
     actor_particle_T* particle = (actor_particle_T*) self;
 
@@ -66,7 +69,9 @@ void actor_particle_tick(actor_T* self)
     }
     else
     {
-        dynamic_list_remove(state->actors, self, (void*)0);
+        self->dx = 0;
+        self->dy = 0;
+        //dynamic_list_remove(state->actors, self, (void*)0);
     }
 
     actor_T* ground_below = get_wall_at_pos(

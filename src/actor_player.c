@@ -118,7 +118,7 @@ void actor_player_tick(actor_T* self)
                 actor_particle_T* particle = init_actor_particle(self->x, self->y + self->height);
                 actor_T* ap = (actor_T*) particle;
                 ap->y -= ap->height;
-                physics_vec2_push(&ap->dx, &ap->dy, random_int(0, 180), random_int(3, 5));
+                physics_vec2_push(&ap->dx, &ap->dy, grav_angle - 90 - random_int(0, 180), random_int(3, 5));
                 dynamic_list_append(state->actors, ap);
             }
 

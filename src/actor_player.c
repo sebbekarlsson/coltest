@@ -34,20 +34,6 @@ actor_player_T* init_actor_player(float x, float y)
 
 void actor_player_draw(actor_T* self)
 {
-    state_T* state = get_current_state();
-
-    draw_positioned_2D_mesh(
-        self->x,
-        self->y,
-        self->z,
-        self->width,
-        self->height,
-        0,
-        0,
-        255,
-        1.0f,
-        state
-    );
 }
 
 void actor_player_tick(actor_T* self)
@@ -66,19 +52,6 @@ void actor_player_tick(actor_T* self)
     float g_x = self->x + (cos(glm_rad(grav_angle)) * (16*(17/2))) + 16/2;
     float g_y = self->y - (sin(glm_rad(grav_angle)) * (16*(17/2))) + 16/2;
 
-    draw_line(
-        self->x + self->width / 2,
-        self->y + self->height / 2,
-        0.0f,
-        g_x,
-        g_y,
-        0,
-        0,
-        0,
-        255,
-        state
-    );
-        
     if (KEYBOARD_STATE->keys[GLFW_KEY_RIGHT] || KEYBOARD_STATE->keys[GLFW_KEY_LEFT])
     {
         float move_angle = 0.0f;
@@ -93,21 +66,8 @@ void actor_player_tick(actor_T* self)
             move_angle = grav_angle - 90.0f - fix;
         }
 
-        self->rz = grav_angle + 90.0f;
-        printf("%12.6f\n", grav_angle);
-
-        draw_line(
-            self->x,
-            self->y,
-            0.0f,
-            self->x + (cos(glm_rad(move_angle)) * 16*4),
-            self->y - (sin(glm_rad(move_angle)) * 16*4),
-            0,
-            255,
-            0,
-            0,
-            state
-        );
+        // make character face the angle of the gravity
+        self->rz = (atan2(g_y - self->y, g_x - self->x) * 180 / M_PI) - 90.0f;
 
         self->dx += (cos(glm_rad(move_angle)) * acceleration);
         self->dy -= (sin(glm_rad(move_angle)) * acceleration);

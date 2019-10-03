@@ -21,7 +21,7 @@ actor_particle_T* init_actor_particle(float x, float y)
     actor_T* actor = (actor_T*) particle;
     actor_constructor(actor, x, y, 0.2f, actor_particle_tick, actor_particle_draw, "particle");
 
-    int size = random_int(2, 6);
+    int size = random_int(4, 6);
     actor->width = size;
     actor->height = size;
 

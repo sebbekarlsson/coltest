@@ -43,7 +43,7 @@ void scene_world_tick(scene_T* self)
 
     float cam_x = 0;
     float cam_y = 0;
-    float cam_rz = 0;
+    float rz = 0;
 
     for (int i = 0; i < state->actors->size; i++)
     {
@@ -53,14 +53,40 @@ void scene_world_tick(scene_T* self)
         {
             cam_x = actor->x;
             cam_y = actor->y;
-            cam_rz = actor->rz;
+            rz = actor->rz;
             break;
         }
     }
 
-    state->camera->x = (cam_x - 640/2);
-    state->camera->y = (cam_y - 480/2);
-    state->camera->rz = cam_rz;
+    state->camera->x = (cam_x-640/2);
+    state->camera->y = (cam_y-480/2);
+    state->camera->offset_x = cam_x;
+    state->camera->offset_y = cam_y;
+    float rot_vel = 0.5f;
+
+    if (state->camera->rz < rz)
+    {
+        if (state->camera->rz + rot_vel > rz)
+        {
+            state->camera->rz = rz;
+        }
+        else
+        {
+            state->camera->rz += rot_vel;
+        }
+    }
+    else
+    if (state->camera->rz > rz)
+    {
+        if (state->camera->rz - rot_vel < rz)
+        {
+            state->camera->rz = rz;
+        }
+        else
+        {
+            state->camera->rz -= rot_vel;
+        }
+    }
 }
 
 void scene_world_draw(scene_T* self)

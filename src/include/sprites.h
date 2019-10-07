@@ -8,5 +8,7 @@ const sprite_T* SPRITE_GRASS;
 
 const sprite_T* SPRITE_PLAYER_LEFT;
 
+const sprite_T* SPRITE_BACKGROUND;
+
 void init_sprites();
 #endif

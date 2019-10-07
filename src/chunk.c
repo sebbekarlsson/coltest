@@ -47,7 +47,7 @@ void chunk_draw(chunk_T* self, int x, int y)
         }
     }
 
-    draw_line(
+    /*draw_line(
         x,
         y,
         0.0f,
@@ -71,7 +71,7 @@ void chunk_draw(chunk_T* self, int x, int y)
         0,
         0,
         state
-    );
+    );*/
 
     camera_unbind(state->camera);
 }

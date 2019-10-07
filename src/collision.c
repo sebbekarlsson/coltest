@@ -111,17 +111,22 @@ void move(actor_T* self, float xa, float ya)
                 self->rz = (atan2(g_y - self->y, g_x - self->x) * 180 / M_PI) - 90.0f;
 
                 actor_T* ground_below = get_wall_at_pos(
-                    self->x + (cos(glm_rad(gravity_angle)) * 1.6f),
-                    self->y - (sin(glm_rad(gravity_angle)) * 1.6f),
+                    (self->x + self->width/2) + (cos(glm_rad(gravity_angle)) * (self->height/2)),
+                    (self->y + self->height/2) - (sin(glm_rad(gravity_angle)) * (self->height/2)),
                     self->width,
                     self->height,
                     0,
-                    self->height
+                    0
                 ); 
 
                 if (!ground_below && planet != (void*)0) // apply gravity
                 {
                     physics_vec2_push(&self->dx, &self->dy, gravity_angle, gravity_force);
+                }
+                else
+                {
+                    self->dx = 0;
+                    self->dy = 0;
                 }
             }
         }

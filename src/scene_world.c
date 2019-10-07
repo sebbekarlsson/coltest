@@ -1,5 +1,6 @@
 #include "include/scene_world.h"
 #include "include/actor_player.h"
+#include "include/actor_ship.h"
 #include "include/actor_planet.h"
 #include <coelum/utils.h>
 #include <coelum/draw_utils.h>
@@ -29,6 +30,10 @@ scene_world_T* init_scene_world()
     
     dynamic_list_append(((state_T*)scene)->actors, (actor_T*)init_actor_player(
                 640/2, (480/2)-((16*18)/2)));
+
+
+    dynamic_list_append(((state_T*)scene)->actors, (actor_T*)init_actor_ship(
+                640/2, (480/2)+((16*24)/2)));
 
     scene_world_generate(world);
 

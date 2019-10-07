@@ -18,7 +18,9 @@ extern unsigned int SHADER_COLORED;
 actor_particle_T* init_actor_particle(float x, float y)
 {
     actor_particle_T* particle = calloc(1, sizeof(struct ACTOR_PARTICLE_STRUCT));
-    actor_T* actor = (actor_T*) particle;
+    actor_entity_T* entity = (actor_entity_T*) particle;
+    actor_entity_constructor(entity);
+    actor_T* actor = (actor_T*) entity;
     actor_constructor(actor, x, y, 0.2f, actor_particle_tick, actor_particle_draw, "particle");
 
     int size = random_int(4, 6);
@@ -56,7 +58,9 @@ void actor_particle_draw(actor_T* self)
 
 void actor_particle_tick(actor_T* self)
 {
-    move(self, self->dx, self->dy);
+    actor_entity_T* entity = (actor_entity_T*) self;
+
+    move(entity, self->dx, self->dy);
     physics_to_zero(&self->dx, self->friction);
     physics_to_zero(&self->dy, self->friction); 
 

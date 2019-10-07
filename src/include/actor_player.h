@@ -1,11 +1,11 @@
 #ifndef ACTOR_PLAYER_H
 #define ACTOR_PLAYER_H
-#include <coelum/actor.h>
+#include "actor_entity.h"
 
 
 typedef struct ACTOR_PLAYER_STRUCT
 {
-    actor_T base;
+    actor_entity_T base;
     unsigned int has_emitted_particles;
     actor_T* vehicle;
 } actor_player_T;

@@ -20,7 +20,9 @@ extern keyboard_state_T* KEYBOARD_STATE;
 actor_ship_T* init_actor_ship(float x, float y)
 {
     actor_ship_T* ship = calloc(1, sizeof(struct ACTOR_SHIP_STRUCT));
-    actor_T* actor = (actor_T*) ship;
+    actor_entity_T* entity = (actor_entity_T*) ship;
+    actor_entity_constructor(entity);
+    actor_T* actor = (actor_T*) entity;
     actor_constructor(actor, x, y, 0.3f, actor_ship_tick, actor_ship_draw, "ship");
 
     ship->rider = (void*)0;
@@ -39,17 +41,12 @@ void actor_ship_draw(actor_T* self)
 
 void actor_ship_tick(actor_T* self)
 {
+    actor_entity_T* entity = (actor_entity_T*) self;
     actor_ship_T* ship = (actor_ship_T*) self;
 
-    move(self, self->dx, self->dy);
+    move(entity, self->dx, self->dy);
     physics_to_zero(&self->dx, self->friction);
     physics_to_zero(&self->dy, self->friction);
-
-    float g_x = self->x + (cos(glm_rad(-(self->rz+90.0f) + 360)) * (16*(17/2))) + 16/2;
-    float g_y = self->y - (sin(glm_rad(-(self->rz+90.0f) + 360)) * (16*(17/2))) + 16/2;
-
-    float gravity_angle = -vec2_angle(
-            self->x + self->width/2, self->y + self->height/2, g_x, g_y);
 
     float acceleration = 0.9f;
 
@@ -57,22 +54,16 @@ void actor_ship_tick(actor_T* self)
     {
         if (KEYBOARD_STATE->keys[GLFW_KEY_RIGHT] || KEYBOARD_STATE->keys[GLFW_KEY_LEFT])
         {
-            float move_angle = 0.0f;
-            float fix = 3.0f;
-
             if (KEYBOARD_STATE->keys[GLFW_KEY_RIGHT])
-                move_angle = gravity_angle + 90.0f + fix;
+                self->rz += 1;
             else // left
-                move_angle = gravity_angle - 90.0f - fix;
-
-            self->dx += (cos(glm_rad(move_angle)) * acceleration);
-            self->dy -= (sin(glm_rad(move_angle)) * acceleration);
+                self->rz -= 1;
         }
 
         if (KEYBOARD_STATE->keys[GLFW_KEY_UP])
         {
-            self->dx -= (cos(glm_rad(gravity_angle)) * acceleration);
-            self->dy += (sin(glm_rad(gravity_angle)) * acceleration);
+            self->dx += (sin(glm_rad(self->rz)) * acceleration);
+            self->dy -= (cos(glm_rad(self->rz)) * acceleration);
         }
     }
 }

@@ -40,12 +40,14 @@ actor_T* get_wall_at_pos(float x, float y, float w, float h, int x_offset, int y
     return (void*) 0;
 }
 
-void move(actor_T* self, float xa, float ya)
+void move(actor_entity_T* entity, float xa, float ya)
 {
+    actor_T* self = (actor_T*) entity;
+
     if (xa != 0 && ya != 0)
     {
-        move(self, xa, 0);
-        move(self, 0, ya);
+        move(entity, xa, 0);
+        move(entity, 0, ya);
         return;
     }
 
@@ -65,20 +67,13 @@ void move(actor_T* self, float xa, float ya)
     }
     else
     {
-        actor_wall_T* wall = (actor_wall_T*) actor;
-        wall->r = 0;
-
         self->dx = 0;
         self->dy = 0;
     }
 
-    float gravity_angle = 0.0f;
-
     state_T* state = get_current_state();
 
     float gravity_force = 0.6f;
-    float g_x = 0;
-    float g_y = 0;
     actor_planet_T* planet = (void*)0;
 
     for (int i = 0; i < state->actors->size; i++)
@@ -94,25 +89,26 @@ void move(actor_T* self, float xa, float ya)
 
             if (distance < (planet->gravity_radius * 16)/2)
             {
-                gravity_angle = -vec2_angle(
+                entity->gravity_angle = -vec2_angle(
                     self->x + self->width/2,
                     self->y + self->height/2,
                     planet_x,
                     planet_y
                 );
 
-                g_x = self->x + (cos(glm_rad(gravity_angle)) * (16*(planet->gravity_radius/2))) + 16/2;
-                g_y = self->y - (sin(glm_rad(gravity_angle)) * (16*(planet->gravity_radius/2))) + 16/2;
+                entity->g_x = self->x + (cos(glm_rad(entity->gravity_angle)) * (16*(planet->gravity_radius/2))) + 16/2;
+                entity->g_y = self->y - (sin(glm_rad(entity->gravity_angle)) * (16*(planet->gravity_radius/2))) + 16/2;
 
                 gravity_force = planet->gravity_radius - distance;
                 gravity_force = gravity_force < 0 ? gravity_force*-1 : gravity_force;
                 gravity_force = gravity_force * 0.003f;
 
-                self->rz = (atan2(g_y - self->y, g_x - self->x) * 180 / M_PI) - 90.0f;
+                if (entity->should_face_gravity)
+                    self->rz = (atan2(entity->g_y - self->y, entity->g_x - self->x) * 180 / M_PI) - 90.0f;
 
                 actor_T* ground_below = get_wall_at_pos(
-                    (self->x + self->width/2) + (cos(glm_rad(gravity_angle)) * (self->height/2)),
-                    (self->y + self->height/2) - (sin(glm_rad(gravity_angle)) * (self->height/2)),
+                    (self->x + self->width/2) + (cos(glm_rad(entity->gravity_angle)) * (self->height/2)),
+                    (self->y + self->height/2) - (sin(glm_rad(entity->gravity_angle)) * (self->height/2)),
                     self->width,
                     self->height,
                     0,
@@ -121,7 +117,7 @@ void move(actor_T* self, float xa, float ya)
 
                 if (!ground_below && planet != (void*)0) // apply gravity
                 {
-                    physics_vec2_push(&self->dx, &self->dy, gravity_angle, gravity_force);
+                    physics_vec2_push(&self->dx, &self->dy, entity->gravity_angle, gravity_force);
                 }
                 else
                 {

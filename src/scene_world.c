@@ -31,9 +31,11 @@ scene_world_T* init_scene_world()
     dynamic_list_append(((state_T*)scene)->actors, (actor_T*)init_actor_player(
                 640/2, (480/2)-((16*18)/2)));
 
+    actor_ship_T* ship = init_actor_ship(
+                640/2, (480/2)+((16*24)/2));
+    ((actor_T*)ship)->rz += 180.0f;
 
-    dynamic_list_append(((state_T*)scene)->actors, (actor_T*)init_actor_ship(
-                640/2, (480/2)+((16*24)/2)));
+    dynamic_list_append(((state_T*)scene)->actors, (actor_T*)ship);
 
     scene_world_generate(world);
 

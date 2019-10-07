@@ -19,8 +19,12 @@ extern keyboard_state_T* KEYBOARD_STATE;
 actor_player_T* init_actor_player(float x, float y)
 {
     actor_player_T* player = calloc(1, sizeof(struct ACTOR_PLAYER_STRUCT));
-    actor_T* actor = (actor_T*) player;
+    actor_entity_T* entity = (actor_entity_T*) player;
+    actor_entity_constructor(entity);
+    actor_T* actor = (actor_T*) entity;
     actor_constructor(actor, x, y, 0.0f, actor_player_tick, actor_player_draw, "player");
+
+    entity->should_face_gravity = 1;
 
     actor->width = 16;
     actor->height = 16;
@@ -37,15 +41,14 @@ actor_player_T* init_actor_player(float x, float y)
 void actor_player_draw(actor_T* self)
 {
     state_T* state = get_current_state();
-    float g_x = self->x + (cos(glm_rad(-(self->rz+90.0f) + 360)) * (16*(17/2))) + 16/2;
-    float g_y = self->y - (sin(glm_rad(-(self->rz+90.0f) + 360)) * (16*(17/2))) + 16/2;
+    actor_entity_T* entity = (actor_entity_T*) self;
 
     draw_line(
             self->x,
             self->y,
             self->z,
-            g_x,
-            g_y,
+            entity->g_x,
+            entity->g_y,
             self->z,
             0,
             0,
@@ -57,9 +60,10 @@ void actor_player_draw(actor_T* self)
 void actor_player_tick(actor_T* self)
 {
     actor_player_T* player = (actor_player_T*) self;
+    actor_entity_T* entity = (actor_entity_T*) player;
     state_T* state = get_current_state();
 
-    move(self, self->dx, self->dy);
+    move(entity, self->dx, self->dy);
     physics_to_zero(&self->dx, self->friction);
     physics_to_zero(&self->dy, self->friction); 
 
@@ -73,12 +77,6 @@ void actor_player_tick(actor_T* self)
 
     float acceleration = 0.9f;
 
-    float g_x = self->x + (cos(glm_rad(-(self->rz+90.0f) + 360)) * (16*(17/2))) + 16/2;
-    float g_y = self->y - (sin(glm_rad(-(self->rz+90.0f) + 360)) * (16*(17/2))) + 16/2;
-
-    float gravity_angle = -vec2_angle(
-            self->x + self->width/2, self->y + self->height/2, g_x, g_y);
-
     if (KEYBOARD_STATE->keys[GLFW_KEY_RIGHT] || KEYBOARD_STATE->keys[GLFW_KEY_LEFT])
     {
         if (!player->vehicle)
@@ -87,9 +85,9 @@ void actor_player_tick(actor_T* self)
             float fix = 3.0f;
 
             if (KEYBOARD_STATE->keys[GLFW_KEY_RIGHT])
-                move_angle = gravity_angle + 90.0f + fix;
+                move_angle = entity->gravity_angle + 90.0f + fix;
             else // left
-                move_angle = gravity_angle - 90.0f - fix;
+                move_angle = entity->gravity_angle - 90.0f - fix;
 
             self->dx += (cos(glm_rad(move_angle)) * acceleration);
             self->dy -= (sin(glm_rad(move_angle)) * acceleration);
@@ -97,8 +95,8 @@ void actor_player_tick(actor_T* self)
     } 
 
     actor_T* ground_below = get_wall_at_pos(
-            self->x + (cos(glm_rad(gravity_angle)) * 1.6f),
-            self->y - (sin(glm_rad(gravity_angle)) * 1.6f),
+            self->x + (cos(glm_rad(entity->gravity_angle)) * 1.6f),
+            self->y - (sin(glm_rad(entity->gravity_angle)) * 1.6f),
             self->width,
             self->height,
             0,
@@ -112,10 +110,7 @@ void actor_player_tick(actor_T* self)
     else
     {
         if (KEYBOARD_STATE->keys[GLFW_KEY_UP] && !player->vehicle) // jump
-            physics_vec2_push(&self->dx, &self->dy, gravity_angle, -(acceleration * 10));
-
-        if (KEYBOARD_STATE->keys[GLFW_KEY_SPACE] && !player->vehicle) // jump
-            physics_vec2_push(&self->dx, &self->dy, gravity_angle, -(acceleration * 20));
+            physics_vec2_push(&self->dx, &self->dy, entity->gravity_angle, -(acceleration * 10));
 
         if (!player->has_emitted_particles)
         {
@@ -124,7 +119,7 @@ void actor_player_tick(actor_T* self)
                 actor_particle_T* particle = init_actor_particle(self->x, self->y + self->height);
                 actor_T* ap = (actor_T*) particle;
                 ap->y -= ap->height;
-                physics_vec2_push(&ap->dx, &ap->dy, gravity_angle - 90 - random_int(0, 180), random_int(3, 5));
+                physics_vec2_push(&ap->dx, &ap->dy, entity->gravity_angle - 90 - random_int(0, 180), random_int(3, 5));
                 dynamic_list_append(state->actors, ap);
             }
 
@@ -161,9 +156,12 @@ void actor_player_tick(actor_T* self)
 
     if (KEYBOARD_STATE->keys[GLFW_KEY_ENTER] && !KEYBOARD_STATE->key_locks[GLFW_KEY_ENTER])
     {
-        if (near_vehicle && !player->vehicle)
+        if (!player->vehicle)
         {
-            player->vehicle = near_vehicle;
+            if (near_vehicle)
+                player->vehicle = near_vehicle;
+            else
+                player->vehicle = (void*)0;
         }
         else
         {

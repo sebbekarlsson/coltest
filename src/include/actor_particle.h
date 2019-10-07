@@ -1,11 +1,11 @@
 #ifndef ACTOR_PARTICLE_H
 #define ACTOR_PARTICLE_H
-#include <coelum/actor.h>
+#include "actor_entity.h"
 
 
 typedef struct ACTOR_PARTICLE_STRUCT
 {
-    actor_T base;
+    actor_entity_T base;
     float r;
     float g;
     float b;

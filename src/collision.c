@@ -75,6 +75,7 @@ void move(actor_entity_T* entity, float xa, float ya)
 
     float gravity_force = 0.6f;
     actor_planet_T* planet = (void*)0;
+    entity->planet = planet;
 
     for (int i = 0; i < state->actors->size; i++)
     {
@@ -89,6 +90,8 @@ void move(actor_entity_T* entity, float xa, float ya)
 
             if (distance < (planet->gravity_radius * 16)/2)
             {
+                entity->planet = planet;
+
                 entity->gravity_angle = -vec2_angle(
                     self->x + self->width/2,
                     self->y + self->height/2,

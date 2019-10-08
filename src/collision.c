@@ -99,8 +99,8 @@ void move(actor_entity_T* entity, float xa, float ya)
                     planet_y
                 );
 
-                entity->g_x = self->x + (cos(glm_rad(entity->gravity_angle)) * (16*(planet->gravity_radius/2))) + 16/2;
-                entity->g_y = self->y - (sin(glm_rad(entity->gravity_angle)) * (16*(planet->gravity_radius/2))) + 16/2;
+                entity->g_x = planet_x + (16/2);
+                entity->g_y = planet_y + (16/2);
 
                 gravity_force = planet->gravity_radius - distance;
                 gravity_force = gravity_force < 0 ? gravity_force*-1 : gravity_force;

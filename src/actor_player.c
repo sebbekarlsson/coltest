@@ -44,8 +44,8 @@ void actor_player_draw(actor_T* self)
     actor_entity_T* entity = (actor_entity_T*) self;
 
     draw_line(
-            self->x,
-            self->y,
+            self->x + self->width/2,
+            self->y + self->height/2,
             self->z,
             entity->g_x,
             entity->g_y,
@@ -95,13 +95,13 @@ void actor_player_tick(actor_T* self)
     } 
 
     actor_T* ground_below = get_wall_at_pos(
-            self->x + (cos(glm_rad(entity->gravity_angle)) * 1.6f),
-            self->y - (sin(glm_rad(entity->gravity_angle)) * 1.6f),
-            self->width,
-            self->height,
-            0,
-            self->height
-            ); 
+        self->x + (cos(glm_rad(entity->gravity_angle)) * 1.6f),
+        self->y - (sin(glm_rad(entity->gravity_angle)) * 1.6f),
+        self->width,
+        self->height,
+        0,
+        0
+    );
 
     if (!ground_below)
     {

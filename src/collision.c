@@ -57,7 +57,7 @@ void move(actor_entity_T* entity, float xa, float ya)
         self->width,
         self->height,
         xa > 0 ? self->width : 0,
-        self->height
+        ya > 0 ? self->height : 0
     );
 
     if (actor == (void*)0)
@@ -110,10 +110,10 @@ void move(actor_entity_T* entity, float xa, float ya)
                     self->rz = (atan2(entity->g_y - self->y, entity->g_x - self->x) * 180 / M_PI) - 90.0f;
 
                 actor_T* ground_below = get_wall_at_pos(
-                    (self->x + self->width/2) + (cos(glm_rad(entity->gravity_angle)) * (self->height/2)),
-                    (self->y + self->height/2) - (sin(glm_rad(entity->gravity_angle)) * (self->height/2)),
-                    self->width,
-                    self->height,
+                    (self->x + self->width/2) + (cos(glm_rad(entity->gravity_angle)) * ((self->width/2))),
+                    (self->y + self->height/2) - (sin(glm_rad(entity->gravity_angle)) * ((self->height/2))),
+                    0,
+                    0,
                     0,
                     0
                 ); 

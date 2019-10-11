@@ -26,16 +26,7 @@ scene_world_T* init_scene_world()
         {
             world->chunks[x][y] = init_chunk();
         }
-    }
-    
-    dynamic_list_append(((state_T*)scene)->actors, (actor_T*)init_actor_player(
-                640/2, (480/2)-((16*18)/2)));
-
-    actor_ship_T* ship = init_actor_ship(
-                640/2, (480/2)+((16*24)/2));
-    ((actor_T*)ship)->rz += 180.0f;
-
-    dynamic_list_append(((state_T*)scene)->actors, (actor_T*)ship);
+    }  
 
     scene_world_generate(world);
 
@@ -142,17 +133,33 @@ chunk_T* scene_world_get_chunk_at(scene_world_T* world, int x, int y)
 
 void scene_world_generate(scene_world_T* self)
 {
+    scene_T* scene = (scene_T*) self;
     state_T* state = (state_T*) self;
 
-    actor_planet_T* planet = init_actor_planet(640/2, 480/2, self, 17, 17+8);
+    int world_width = 16*16*8;
+    int world_height = 16*16*8;
+
+    float planet_x = world_width / 2;
+    float planet_y = world_height / 2;
+    float planet_radius = 17;
+
+    dynamic_list_append(((state_T*)scene)->actors, (actor_T*)init_actor_player(
+                planet_x, planet_y - ((planet_radius/2)*16)));
+
+    actor_ship_T* ship = init_actor_ship(planet_x, planet_y + ((planet_radius/2)*16));
+    ((actor_T*)ship)->rz += 180.0f;
+    dynamic_list_append(((state_T*)scene)->actors, (actor_T*)ship);
+
+    actor_planet_T* planet = init_actor_planet(planet_x, planet_y, self, planet_radius, planet_radius+8);
     actor_planet_generate(planet);
     dynamic_list_append(state->actors, (actor_T*) planet);
 
-    actor_planet_T* planet2 = init_actor_planet((640/2) + (30*16), (480/2), self, 17, 17+8);
-    actor_planet_generate(planet2);
-    dynamic_list_append(state->actors, (actor_T*) planet2);
+    int padding = 16*16;
 
-    actor_planet_T* planet3 = init_actor_planet((640/2) + (30*16), (480/2) + (30*16), self, 17, 17+8);
-    actor_planet_generate(planet3);
-    dynamic_list_append(state->actors, (actor_T*) planet3);
+    for (int i = 0; i < 10; i++)
+    {
+        actor_planet_T* planet = init_actor_planet(random_int(padding, world_width-padding), random_int(padding, world_height-padding), self, planet_radius, planet_radius+8);
+        actor_planet_generate(planet);
+        dynamic_list_append(state->actors, (actor_T*) planet);
+    }
 }

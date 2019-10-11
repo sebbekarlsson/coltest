@@ -7,6 +7,7 @@ const sprite_T* SPRITE_STONE;
 const sprite_T* SPRITE_GRASS;
 
 const sprite_T* SPRITE_PLAYER_LEFT;
+const sprite_T* SPRITE_PLAYER_RIGHT;
 
 const sprite_T* SPRITE_SHIP;
 

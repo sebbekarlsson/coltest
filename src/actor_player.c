@@ -85,9 +85,15 @@ void actor_player_tick(actor_T* self)
             float fix = 3.0f;
 
             if (KEYBOARD_STATE->keys[GLFW_KEY_RIGHT])
+            {
                 move_angle = entity->gravity_angle + 90.0f + fix;
-            else // left
+                self->sprite = SPRITE_PLAYER_RIGHT;
+            }
+            else
+            {
                 move_angle = entity->gravity_angle - 90.0f - fix;
+                self->sprite = SPRITE_PLAYER_LEFT;
+            }
 
             self->dx += (cos(glm_rad(move_angle)) * acceleration);
             self->dy -= (sin(glm_rad(move_angle)) * acceleration);

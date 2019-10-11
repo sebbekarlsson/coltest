@@ -27,8 +27,8 @@ actor_ship_T* init_actor_ship(float x, float y)
 
     ship->rider = (void*)0;
 
-    actor->width = 128;
-    actor->height = 128;
+    actor->width = 84;
+    actor->height = 58;
     actor->friction = 0.3f;
     actor->sprite = SPRITE_SHIP;
 
